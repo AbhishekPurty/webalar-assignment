@@ -2,12 +2,13 @@ import axios from "axios";
 import SubmitButton from "./SubmitButton";
 import Tags from "./Tags";
 
-export default function Post({post}){
+export default function Post({post, setRefresh, setTaskToggle, setcurrTask}){
 
     function deletePost(){
         axios.post("/api/deleteTask", {id: post._id})
         .then((res)=>{
-            console.log(res.data)            
+            console.log(res.data)
+            setRefresh(prev=> prev+1)          
         })
         .catch((err)=>{
             console.log(err)            
@@ -25,16 +26,16 @@ export default function Post({post}){
                 <div className="">
 
                     {/* Name */}
-                    <div className="text-sm font-semibold">
+                    <div className="text-xl font-bold">
                         {post.title}
                     </div>
 
                 </div>
 
                 {/* Posted time */}
-                {/* <div className="flex items-start text-xs  -mt-4 ml-auto text-[10px]">
-                    {posted}h ago
-                </div> */}
+                <div className="flex items-start text-xs  -mt-4 ml-auto text-[10px]">
+                    {post.status}
+                </div>
             </div>
 
             {/* Seperator */}
@@ -42,21 +43,6 @@ export default function Post({post}){
             
             {/* Description */}
             <div className="flex flex-col items-center w-full gap-3 p-1">
-
-                {/* Header */}
-                <div className="flex justify-between items-center w-full">
-                    
-                    {/* Heading */}
-                    <div className="text-xl font-bold">
-                        {post.title}
-                    </div>
-
-                    {/* Client */}
-                    <div className="text-sm">
-                        {post.status}
-                    </div>
-
-                </div>
 
                 {/* Description */}
                 <div className="text-sm w-full">
@@ -80,19 +66,15 @@ export default function Post({post}){
                 <div className="w-full flex flex-col gap-1">
 
                     {/* Heading */}
-                    <div className="text-[10px]">Skills</div>
-                    
-                    {/* List of skills */}
-                    <div className="flex gap-1 flex-wrap w-full">
-                        
-                    </div>
+                    <div className="text-[10px]">{post.weather}</div>
+
                 </div>                
 
                 {/* Apply and deadline */}
                 <div className="flex justify-between items-center w-full">
 
                     <div className="w-[30%] md:w-[15%]">
-                        <SubmitButton text={'Edit'}/>
+                        <SubmitButton func={()=>{setcurrTask(post); setTaskToggle(true)}} text={'Edit'}/>
                     </div>
 
                     {/* <div className="text-sm">

@@ -7,18 +7,82 @@ import Tags from "./Tags";
 import SubmitButton from "./SubmitButton";
 import axios from "axios";
 
-export default function AddTask({func}){
-
-    const [skills, setSkills] = useState([])
-    const [tasks, setTasks] = useState([])
-    const [ctr, setCtr] = useState(1)
+export default function AddTask({func, task=null, setTaskToggle, setRefresh}){
 
     useEffect(() => {
-      
+        if(task===null){
+            return ()=>{}
+        }
+
+        document.getElementById('title').value = task.title || ""
+        document.getElementById('desc').value = task.description || ""
+        document.getElementById('status').value = task.status 
+        document.getElementById('city').value = task.city || ""
+        document.getElementById('country').value = task.country || ""
         
     
       return () => {}
     }, [])
+
+    async function addTask(){
+
+        if(document.getElementById('title').value.trim() === "" ||
+        document.getElementById('desc').value.trim() === "" ||
+        document.getElementById('status').value.trim() === null ||
+        document.getElementById('city').value.trim() === "" ||
+        document.getElementById('country').value.trim() === ""){
+            return
+        }
+
+        let weather = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${document.getElementById('city').value},${document.getElementById('country').value}&APPID=58f141da4ab9402772434dd14b82ca1e`)
+        // console.log(await weather);
+        
+        weather = await weather?.data?.weather[0]?.main
+        axios.post("/api/addTask", {
+            title:document.getElementById('title').value,
+            description:document.getElementById('desc').value,
+            status:document.getElementById('status').value,
+            weather:weather,
+        })
+        .then((res)=>{
+            console.log(res.data)
+            setTaskToggle(false)
+            setRefresh(prev=>prev+1)
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+
+    async function updateTask(){
+
+        if(document.getElementById('title').value.trim() === "" ||
+        document.getElementById('desc').value.trim() === "" ||
+        document.getElementById('status').value.trim() === null ||
+        document.getElementById('city').value.trim() === "" ||
+        document.getElementById('country').value.trim() === ""){
+            return
+        }
+        
+        let weather = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${document.getElementById('city').value},${document.getElementById('country').value}&APPID=58f141da4ab9402772434dd14b82ca1e`)
+        weather = await weather?.data?.weather[0]?.main
+        axios.post("/api/updateTask", {
+            id: task._id,
+            title:document.getElementById('title').value,
+            description:document.getElementById('desc').value,
+            status:document.getElementById('status').value,
+            weather:weather,
+        })
+        .then((res)=>{
+            console.log(res.data)
+            setTaskToggle(false)
+            setRefresh(prev=>prev+1)
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+
     
 
     return(
@@ -45,111 +109,41 @@ export default function AddTask({func}){
                     <form onSubmit={(e)=>{e.preventDefault()}} className="flex flex-col gap-2 px-10">
                         
                         {/* Title */}
-                        <TextBox name={'title'} placeholder={'Title'}/>
-
-                        {/* Client */}
-                        {/* <TextBox name={'client'} placeholder={'Client'}/> */}
+                        <TextBox name={'title'} id={"title"} placeholder={'Title'}/>
 
                         {/* Description */}
-                        <TextArea name={'jd'} placeholder={'Description'}/>
+                        <TextArea name={'desc'} id={'desc'} placeholder={'Description'}/>
                         
                         {/* Tasks */}
                         <div className=" flex flex-col gap-2 my-2">
-                            {
-                                tasks.map((task, idx)=>{
-
-                                    return(
-                                        <input name={'task'+idx} key={'task'+idx} placeholder={'Enter Task'} defaultValue={task} className="bg-[#F3F1FF] dark:bg-[#252525] focus:scale-[1.02] ease-out duration-150" type="text"/>
-                                    )
-                                })
-                            }
 
                             <div className="flex items-center justify-between gap-2">
 
-                                <div className="w-[91%]">
-                                    <input id="newTask" placeholder={'Enter Task'} className="bg-[#F3F1FF] dark:bg-[#252525] focus:scale-[1.02] ease-out duration-150" type="text"/>
-                                </div>
-
-                                <div 
-                                    onClick={()=>{
-                                        let temp = tasks
-                                        if(!document.getElementById('newTask').value.trim()){
-                                            return
-                                        }
-
-                                        temp.push(document.getElementById('newTask').value.trim())
-                                        
-                                        setTasks(temp)
-
-                                        setCtr(ctr+1)
-
-                                        document.getElementById('newTask').value = "";
-                                    }} 
-                                    className="bg-[linear-gradient(45deg,#9181F4,#5038ED)] text-white w-[2.4rem] h-[2.4rem] rounded-lg flex justify-center items-center active:scale-[0.95] hover:scale-[1.05] ease-out duration-150 cursor-pointer"
-                                >
-                                        <RiAddLine size={20}/>
-                                </div>
+                                <select id="status" className="w-full bg-[#F3F1FF] px-2 h-[2.5rem] outline-none rounded-md dark:bg-[#252525] focus:scale-[1.02] ease-out duration-150">
+                                    <option value={null}>Select</option>
+                                    <option value={'Pending'}>Pending</option>
+                                    <option value={'In-Progress'}>In-Progress</option>
+                                    <option value={'Completed'}>Completed</option>
+                                </select>
                                 
                             </div>
                         </div>
 
-                        {/* Date */}
-                        <DateBox name={'deadline'} placeholder={'Date'}/>
+                        <TextBox name={'city'} id={'city'} placeholder={'City'}/>
+
+                        <TextBox name={'country'} id={'country'} placeholder={'Country'}/>
                         
-                        {/* Skills Entry */}
-                        <div className="flex items-center justify-between gap-2">
-                            
-                            {/* Textbox */}
-                            <div className="w-[91%]">
-                                <input id={`skills`} name={'skills'} placeholder={'Skills'} className="bg-[#F3F1FF] dark:bg-[#252525] focus:scale-[1.02] ease-out duration-150" type="text"/>
-                            </div>
-                            
-                            {/* Add new skill */}
-                            <div 
-                                onClick={()=>{
-                                    let temp = skills
-                                    if(!document.getElementById('skills').value.trim()){
-                                        return
-                                    }
-
-                                    temp.push(document.getElementById('skills').value.trim())
-                                    
-                                    setSkills(temp)
-
-                                    setCtr(ctr+1)
-
-                                    document.getElementById('skills').value = "";
-                                }} 
-                                className="bg-[linear-gradient(45deg,#9181F4,#5038ED)] text-white w-[2.4rem] h-[2.4rem] rounded-lg flex justify-center items-center active:scale-[0.95] hover:scale-[1.05] ease-out duration-150 cursor-pointer"
-                            >
-                                    <RiAddLine size={20}/>
-                            </div>
-                        </div>
-
-                        {/* Skills tags */}
-                        <div className="flex gap-1 flex-wrap">
-                            {
-                                skills.map((skill, idx)=>{
-                                    return(
-                                        <div key={idx} className="pr-2 bg-[#E3E3E3] dark:bg-[#252525] text-[#616161] dark:text-[#FFFFFF] text-xs ease-out duration-300 rounded-sm flex justify-between items-center">
-                                            <Tags name={skill} />
-
-                                            <RiCloseLine 
-                                                onClick={()=>{
-                                                    let temp = skills
-                                                    setSkills([...temp.slice(0, idx), ...temp.slice(idx+1)])
-                                                }} 
-                                                className="mt-[1px] cursor-pointer"
-                                            />
-                                        </div>
-                                    )
-                                })
-                            }
-                        </div>
                         
                         {/* Submit */}
                         <div className="mt-10">
-                            <SubmitButton text={"Post Task"}/>
+                            <SubmitButton func={()=>{
+                                if(task===null){
+                                    addTask()
+                                }
+                                else{
+                                    updateTask()
+                                }
+                            }} text={"Post Task"}/>
                         </div>
                         
                     </form>

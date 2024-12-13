@@ -30,8 +30,7 @@ export default function Home({setIsDark, isDark}) {
   const [posts, setPosts] = useState([])
 
   const [currUser, setcurrUser] = useState(null)
-  const [currPost, setcurrPost] = useState(null)
-  const [currLocation, setcurrLocation] = useState(null)
+  const [currTask, setcurrTask] = useState(null)
 
   const [refresh, setRefresh] = useState(1)
 
@@ -46,8 +45,6 @@ export default function Home({setIsDark, isDark}) {
 
   useEffect(()=>{
 
-    
-
     axios.get('/api/getTasks')
     .then((res)=>{
       console.log(res.data.data)  
@@ -58,7 +55,7 @@ export default function Home({setIsDark, isDark}) {
     })
 
     return () => {}
-  }, [])
+  }, [refresh])
   
 
   return (
@@ -72,7 +69,7 @@ export default function Home({setIsDark, isDark}) {
       {/* Add Task Slider */}
       {
         taskToggle&&
-        <AddTask func={()=>setTaskToggle(false)}/>
+        <AddTask setTaskToggle={setTaskToggle} setRefresh={setRefresh} task={currTask} func={()=>setTaskToggle(false)}/>
       }
 
       {/* Main div*/}
@@ -83,16 +80,17 @@ export default function Home({setIsDark, isDark}) {
 
           {/* Submit Button */}
           <div className="w-full md:w-[40%] lg:w-[20%]">
-            <SubmitButton func={()=>{setTaskToggle(true)}} text={'Add Task'}/>
+            <SubmitButton func={()=>{setcurrTask(null); setTaskToggle(true)}} text={'Add Task'}/>
           </div>
-          {
-            posts.map((post,idx)=>{
 
-              console.log(post);
+          {
+            posts.reverse().map((post,idx)=>{
+
+              // console.log(post);
               
               
               return(
-                <Post post={post} key={post._id} />
+                <Post setcurrTask={setcurrTask} setTaskToggle={setTaskToggle} setRefresh={setRefresh} post={post} key={post._id} />
               )
             })
           }
@@ -110,8 +108,8 @@ export default function Home({setIsDark, isDark}) {
             <div className="relative">
 
               {/* Cover */}
-              <div className="h-[6rem]">
-                <Image alt="Cover KPMG" src="/Frame 8.svg" width={1000} height={50}/>
+              <div className="h-[6rem] overflow-hidden">
+                <Image alt="Cover" src="/bg.jpg" width={1000} height={50}/>
               </div>
               
               {/* Image Circle */}
@@ -124,7 +122,7 @@ export default function Home({setIsDark, isDark}) {
             </div>
 
             {/* Details */}
-            <div className="px-4 flex flex-col gap-2">
+            <div className="px-4 flex flex-col gap-2 z-20">
               
               {/* Name */}
               <div className="font-bold text-[0.625rem] lg:text-[1rem] text-[#6E5AF0]">
@@ -152,23 +150,10 @@ export default function Home({setIsDark, isDark}) {
               </div>
 
               <div className="font-bold text-[#5B44EE]">
-                27
+                {posts.length}
               </div>
 
             </div>
-
-            {/* Response on your proposal */}
-            {/* <div className="bg-[#F7F7F7] dark:bg-[#252525] rounded-md flex items-start justify-between py-2 px-4 ease-out duration-300 ">
-
-              <div className="w-[80%]">
-                Response on your proposal
-              </div>
-
-              <div className="font-bold text-[#5B44EE]">
-                17
-              </div>
-
-            </div> */}
           </div>
 
           {/* Logout button */}
