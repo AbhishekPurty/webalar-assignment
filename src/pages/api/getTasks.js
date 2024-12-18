@@ -8,8 +8,7 @@ export default async function handler(req, res) {
   try {
     const { db } = await connectToDatabase();
 
-
-    const tasks = await db.collection("tasks").find({}).toArray()
+    const tasks = await db.collection("tasks").find({user: req.query.id}).toArray()
     
 
     return res.status(200).json({ data: tasks });

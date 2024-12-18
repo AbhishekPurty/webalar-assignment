@@ -79,13 +79,13 @@ export default function Login({setIsDark}){
                         <input name={'password'} value={password} onChange={(e)=>{setPassword(e.target.value); setWrong(false)}} placeholder="Password" className="bg-[#F3F1FF] dark:bg-[#252525] focus:scale-[1.02] ease-out duration-150" type="password"/>
                     </div>
 
-                    <div className="flex  gap-3 w-[40%]">
+                    <div className="flex  gap-3 w-full">
 
                         {/* Submit */}
                         <SubmitButton func={(e)=>{login(e)}} text={'Login'}/>
                         
                         {/* Signup */}
-                        <SubmitButton  text={'Signup'}/>
+                        <SubmitButton func={(e)=>{e.preventDefault(); window.location.assign("/signup")}} text={'Go to Signup'}/>
                     </div>
 
                 </form>

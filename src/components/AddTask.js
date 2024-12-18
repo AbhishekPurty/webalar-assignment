@@ -7,7 +7,7 @@ import Tags from "./Tags";
 import SubmitButton from "./SubmitButton";
 import axios from "axios";
 
-export default function AddTask({func, task=null, setTaskToggle, setRefresh}){
+export default function AddTask({func, task=null, setTaskToggle, setRefresh, currUser}){
 
     useEffect(() => {
         if(task===null){
@@ -22,7 +22,7 @@ export default function AddTask({func, task=null, setTaskToggle, setRefresh}){
         
     
       return () => {}
-    }, [])
+    }, [task])
 
     async function addTask(){
 
@@ -43,6 +43,7 @@ export default function AddTask({func, task=null, setTaskToggle, setRefresh}){
             description:document.getElementById('desc').value,
             status:document.getElementById('status').value,
             weather:weather,
+            email: currUser
         })
         .then((res)=>{
             console.log(res.data)

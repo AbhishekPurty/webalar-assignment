@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     const { db } = await connectToDatabase();
 
 
-    const task = await db.collection("tasks").insertOne({title:req.body.title, description:req.body.description, status:req.body.status, weather:req.body.weather})
+    const task = await db.collection("tasks").insertOne({title:req.body.title, description:req.body.description, status:req.body.status, weather:req.body.weather, user: req.body.email})
     // console.log(task);
     
 

@@ -37,7 +37,9 @@ export default function Home({setIsDark, isDark}) {
   useEffect(() => {
     const token = Cookies.get('token');
     const decoded = jwtDecode.decode(token);
-    setcurrUser(decoded.email)
+    if (decoded != null){
+      setcurrUser(decoded.email)
+    }
   
     return () => {}
   }, [])
@@ -45,7 +47,7 @@ export default function Home({setIsDark, isDark}) {
 
   useEffect(()=>{
 
-    axios.get('/api/getTasks')
+    axios.get(`/api/getTasks?id=${currUser}`)
     .then((res)=>{
       console.log(res.data.data)  
       setPosts(res.data.data)
@@ -55,7 +57,7 @@ export default function Home({setIsDark, isDark}) {
     })
 
     return () => {}
-  }, [refresh])
+  }, [refresh, currUser])
   
 
   return (
@@ -69,7 +71,7 @@ export default function Home({setIsDark, isDark}) {
       {/* Add Task Slider */}
       {
         taskToggle&&
-        <AddTask setTaskToggle={setTaskToggle} setRefresh={setRefresh} task={currTask} func={()=>setTaskToggle(false)}/>
+        <AddTask currUser={currUser} setTaskToggle={setTaskToggle} setRefresh={setRefresh} task={currTask} func={()=>setTaskToggle(false)}/>
       }
 
       {/* Main div*/}

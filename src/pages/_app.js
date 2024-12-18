@@ -11,13 +11,13 @@ export default function App({ Component, pageProps }) {
     // console.log(Cookies.get('username'));
     
 
-    if(Cookies.get('token') && window.location.pathname === '/login'){
+    if(Cookies.get('token') && (window.location.pathname === '/login' || window.location.pathname === '/signup')){
       window.location.assign("/")
       return ()=>{}
   
     }
 
-    if(!Cookies.get('token') && window.location.pathname != '/login'){
+    if(!Cookies.get('token') && (window.location.pathname !== '/login' && window.location.pathname !== '/signup')){
       window.location.assign("/login")
       return ()=>{}
     }
